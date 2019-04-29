@@ -1,6 +1,5 @@
 package me.zinno.nake.board;
 
-import me.zinno.nake.exceptions.OutOfBoundsException;
 import me.zinno.nake.interfaces.Drawable;
 
 import java.util.LinkedList;

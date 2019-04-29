@@ -2,7 +2,6 @@ package me.zinno.nake;
 
 import me.zinno.nake.board.Board;
 import me.zinno.nake.enums.GameStatus;
-import me.zinno.nake.exceptions.OutOfBoundsException;
 import me.zinno.nake.interfaces.Collidable;
 
 import java.awt.*;

@@ -1,6 +1,7 @@
 package me.zinno.nake;
 
 import me.zinno.nake.board.Board;
+import me.zinno.nake.enums.ControlsListener;
 import me.zinno.nake.enums.GameStatus;
 import me.zinno.nake.interfaces.Collidable;
 
@@ -27,7 +28,9 @@ public class App implements Runnable {
         this.tickRate = tickRate;
 
         this.collidables = new LinkedList<>();
-        this.board = new Board(size);
+
+        this.board = new Board(new Dimension(Math.min(Math.max(size.width, 300), Toolkit.getDefaultToolkit().getScreenSize().width - 200),
+                Math.min(Math.max(size.height, 300), Toolkit.getDefaultToolkit().getScreenSize().height - 200)));
     }
 
     public void initialize() {
@@ -39,16 +42,24 @@ public class App implements Runnable {
         this.snake = new Snake(this.board);
 
         this.board.addKeyListener(this.snake);
+        this.board.addKeyListener(new ControlsListener(this));
     }
 
     public void beginLoop() {
         if(!this.hasInitialized)
             this.initialize();
 
-        this.shouldLoop = true;
+        this.shouldLoop = false;
         this.isPlaying = true;
 
         this.gameThread.start();
+
+        try {
+            Thread.sleep(2500);
+            this.setLooping(true);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -56,8 +67,8 @@ public class App implements Runnable {
 
         while(this.isPlaying) {
 
-            if(!this.shouldLoop)
-                continue;
+            if(this.shouldLoop)
+                this.snake.moveSnake();
 
             try {
                 Thread.sleep(this.tickRate);
@@ -66,8 +77,6 @@ public class App implements Runnable {
             }
 
             Graphics2D g2d = (Graphics2D) this.board.getGraphics().create();
-
-            this.snake.moveSnake();
 
             this.board.draw(g2d);
 
@@ -84,7 +93,7 @@ public class App implements Runnable {
         }
     }
 
-    private void checkGameStatus(GameStatus gameStatus) {
+    public void checkGameStatus(GameStatus gameStatus) {
         switch (gameStatus) {
             case CONTINUE:
                 return;
@@ -98,13 +107,11 @@ public class App implements Runnable {
     }
 
     private void pauseGame() {
-        System.out.println("Game paused");
-        this.setShouldLoop(false);
+        this.setLooping(!this.isLooping());
     }
 
     private void endGame() {
-        System.out.println("Game ended");
-        this.setPlaying(false);
+        this.setPlaying(!this.isPlaying());
     }
 
     public boolean isPlaying() {
@@ -115,16 +122,16 @@ public class App implements Runnable {
         isPlaying = playing;
     }
 
-    public boolean shouldLoop() {
+    public boolean isLooping() {
         return shouldLoop;
     }
 
-    public void setShouldLoop(boolean shouldLoop) {
+    public void setLooping(boolean shouldLoop) {
         this.shouldLoop = shouldLoop;
     }
 
     public static void main(String[] args) {
-        App app = new App(new Dimension(1800, 600), 200);
+        App app = new App(new Dimension(1600, 1000), 100);
 
         app.initialize();
 
