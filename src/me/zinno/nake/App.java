@@ -70,12 +70,6 @@ public class App implements Runnable {
             if(this.shouldLoop)
                 this.snake.moveSnake();
 
-            try {
-                Thread.sleep(this.tickRate);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
             Graphics2D g2d = (Graphics2D) this.board.getGraphics().create();
 
             this.board.draw(g2d);
@@ -90,6 +84,12 @@ public class App implements Runnable {
             }
 
             this.snake.draw(g2d);
+
+            try {
+                Thread.sleep(this.tickRate);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
