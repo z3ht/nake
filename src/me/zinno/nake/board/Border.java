@@ -43,9 +43,9 @@ public class Border implements Collidable<Snake> {
 
     @Override
     public boolean isCollided(Snake snake) {
-        Dimension futureLoc = snake.getFutureLocation();
-        return futureLoc.width < 0 || futureLoc.width >= board.getNumPieces().width ||
-                futureLoc.height < 0 || futureLoc.height >= board.getNumPieces().height;
+        Dimension headLoc = snake.getLocations().get(0);
+        return headLoc.width < 0 || headLoc.width >= board.getNumPieces().width ||
+                headLoc.height < 0 || headLoc.height >= board.getNumPieces().height;
     }
 
     @Override

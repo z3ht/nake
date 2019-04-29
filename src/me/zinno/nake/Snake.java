@@ -3,9 +3,8 @@ package me.zinno.nake;
 import me.zinno.nake.board.Board;
 import me.zinno.nake.enums.Direction;
 import me.zinno.nake.enums.GameStatus;
-import me.zinno.nake.exceptions.OutOfBoundsException;
 import me.zinno.nake.interfaces.Collidable;
-import me.zinno.nake.interfaces.PredictableLocale;
+import me.zinno.nake.interfaces.Locatable;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -13,7 +12,7 @@ import java.awt.event.KeyListener;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Snake implements KeyListener, PredictableLocale, Collidable<Snake>  {
+public class Snake implements KeyListener, Locatable, Collidable<Snake>  {
     private Board board;
     private List<Direction> direction;
     private List<Dimension> bodyParts;
@@ -29,7 +28,7 @@ public class Snake implements KeyListener, PredictableLocale, Collidable<Snake> 
     }
 
     public void consumeFood() {
-        this.bodyParts.add(0, this.getFutureLocation());
+        this.bodyParts.add(this.bodyParts.get(this.bodyParts.size() - 1));
     }
 
     public void moveSnake() {
@@ -58,16 +57,16 @@ public class Snake implements KeyListener, PredictableLocale, Collidable<Snake> 
         return this.direction.get(direction.size() - 1).ordinal() == (Direction.getDirection(e.getExtendedKeyCode()).ordinal() + 2) % Direction.values().length;
     }
 
+    private Dimension getFutureLocation() {
+        return new Dimension((int) this.bodyParts.get(0).getWidth() + this.direction.get(0).getLocation().width,
+                (int) this.bodyParts.get(0).getHeight() + this.direction.get(0).getLocation().height);
+    }
+
     @Override
     public void keyReleased(KeyEvent e) {}
 
     @Override
     public void keyTyped(KeyEvent e) {}
-
-    public Dimension getFutureLocation() {
-        return new Dimension((int) this.bodyParts.get(0).getWidth() + this.direction.get(0).getLocation().width,
-                (int) this.bodyParts.get(0).getHeight() + this.direction.get(0).getLocation().height);
-    }
 
     @Override
     public List<Dimension> getLocations() {
@@ -80,12 +79,17 @@ public class Snake implements KeyListener, PredictableLocale, Collidable<Snake> 
     }
 
     @Override
-    public void draw(Graphics2D g2d) {
-        try {
-            for(Dimension bodyPart : this.bodyParts)
-                board.colorPiece(bodyPart.width, bodyPart.height, Color.GREEN);
-        } catch (OutOfBoundsException e) {
-            e.printStackTrace();
+    public boolean isCollided(Snake snake) {
+        for(int index = 1; index < snake.getLocations().size(); index += 1) {
+            if (this.getLocations().get(0).equals(snake.getLocations().get(index)))
+                return true;
         }
+        return false;
+    }
+
+    @Override
+    public void draw(Graphics2D g2d) {
+        for(Dimension bodyPart : this.bodyParts)
+            board.colorPiece(bodyPart.width, bodyPart.height, Color.GREEN);
     }
 }

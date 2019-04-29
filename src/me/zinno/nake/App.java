@@ -67,24 +67,24 @@ public class App implements Runnable {
 
             Graphics2D g2d = (Graphics2D) this.board.getGraphics().create();
 
+            this.snake.moveSnake();
+
             this.board.draw(g2d);
 
-            this.snake.draw(g2d);
-
             if(this.snake.isCollided(this.snake))
-                checkCollisionStatus(this.snake.onCollision(snake));
+                checkGameStatus(this.snake.onCollision(snake));
 
             for(Collidable<Snake> collidable : this.collidables) {
                 collidable.draw(g2d);
                 if(collidable.isCollided(this.snake))
-                    checkCollisionStatus(collidable.onCollision(snake));
+                    checkGameStatus(collidable.onCollision(snake));
             }
 
-            this.snake.moveSnake();
+            this.snake.draw(g2d);
         }
     }
 
-    private void checkCollisionStatus(GameStatus gameStatus) {
+    private void checkGameStatus(GameStatus gameStatus) {
         switch (gameStatus) {
             case CONTINUE:
                 return;

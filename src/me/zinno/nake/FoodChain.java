@@ -41,10 +41,6 @@ public class FoodChain implements Collidable<Snake> {
 
     @Override
     public void draw(Graphics2D g2d) {
-        try {
-            this.board.colorPiece(this.foodLocation.width, this.foodLocation.height, Color.RED);
-        } catch (OutOfBoundsException e) {
-            e.printStackTrace();
-        }
+        this.board.colorPiece(this.foodLocation.width, this.foodLocation.height, Color.RED);
     }
 }

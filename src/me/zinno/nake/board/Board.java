@@ -53,11 +53,7 @@ public class Board extends JFrame implements Drawable {
         setVisible(true);
     }
 
-    public void colorPiece(int x, int y, Color color) throws OutOfBoundsException {
-
-        if(x < 0 || y < 0 || x >= numPieces.width || y >= numPieces.height)
-            throw new OutOfBoundsException();
-
+    public void colorPiece(int x, int y, Color color) {
         if(color != this.boardColor)
             this.occupiedLocations.add(new Dimension(x, y));
 
