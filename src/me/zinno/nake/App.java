@@ -16,25 +16,32 @@ public class App implements Runnable {
     private boolean shouldLoop;
     private boolean hasInitialized;
 
+    private final Dimension size;
+    private final int tickRate;
+
     private Thread gameThread;
-    private int tickRate;
+
+    // Creating a board instead of a frame is a bad design choice because the entire board (frame) must be recreated every time the game restarts
+    // instead of just recreating a board (panel) from a final frame like I have done in galaga+.
     private Board board;
 
     private Snake snake;
     private List<Collidable<Snake>> collidables;
 
     public App(Dimension size, int tickRate) {
-        this.gameThread = new Thread(this);
         this.tickRate = tickRate;
-
+        this.size = size;
         this.collidables = new LinkedList<>();
-
-        this.board = new Board(new Dimension(Math.min(Math.max(size.width, 300), Toolkit.getDefaultToolkit().getScreenSize().width - 200),
-                Math.min(Math.max(size.height, 300), Toolkit.getDefaultToolkit().getScreenSize().height - 200)));
     }
 
     public void initialize() {
         this.hasInitialized = true;
+
+        // This is necessary due to a bad design choice that I dont want to fix.
+        this.board = new Board(new Dimension(Math.min(Math.max(size.width, 300), Toolkit.getDefaultToolkit().getScreenSize().width - 200),
+                Math.min(Math.max(size.height, 300), Toolkit.getDefaultToolkit().getScreenSize().height - 200)));
+
+        this.gameThread = new Thread(this);
 
         this.collidables.add(new FoodChain(this.board));
         this.collidables.add(this.board.getBorder());
@@ -43,14 +50,18 @@ public class App implements Runnable {
 
         this.board.addKeyListener(this.snake);
         this.board.addKeyListener(new ControlsListener(this));
-    }
-
-    public void beginLoop() {
-        if(!this.hasInitialized)
-            this.initialize();
 
         this.shouldLoop = false;
         this.isPlaying = true;
+    }
+
+    public void beginLoop() {
+        this.beginLoop(true);
+    }
+
+    public void beginLoop(boolean delayStart) {
+        if(!this.hasInitialized)
+            this.initialize();
 
         this.gameThread.start();
 
@@ -69,6 +80,9 @@ public class App implements Runnable {
 
             if(this.shouldLoop)
                 this.snake.moveSnake();
+
+            if(this.board.getGraphics() == null)
+                break;
 
             Graphics2D g2d = (Graphics2D) this.board.getGraphics().create();
 
@@ -104,6 +118,17 @@ public class App implements Runnable {
                 endGame();
                 return;
         }
+    }
+
+    public void restartGame() {
+
+        // This is necessary due to a faulty design choice that I dont want to change
+        this.board.setVisible(false);
+        this.board.dispose();
+
+        this.collidables.clear();
+        this.initialize();
+        this.beginLoop(false);
     }
 
     private void pauseGame() {

@@ -6,28 +6,35 @@ import java.awt.event.KeyListener;
 import java.util.List;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
+import java.util.function.Function;
 
 public class ControlsListener implements KeyListener {
 
     public enum Controls {
 
-        PAUSE(Arrays.asList(KeyEvent.VK_SPACE, KeyEvent.VK_ENTER), GameStatus.PAUSE),
-        END_GAME(Arrays.asList(KeyEvent.VK_ESCAPE), GameStatus.END_GAME);
+        PAUSE(Arrays.asList(KeyEvent.VK_SPACE, KeyEvent.VK_ENTER), (app) -> {
+            if(!app.isPlaying()) {
+                app.restartGame();
+                return GameStatus.CONTINUE;
+            } else
+                return GameStatus.PAUSE;
+        }),
+        END_GAME(Arrays.asList(KeyEvent.VK_ESCAPE), (app) -> GameStatus.END_GAME);
 
         private final List<Integer> keyEvents;
-        private final GameStatus gameStatus;
+        private final Function<App, GameStatus> onPressFunction;
 
-        Controls(List<Integer> keyEvents, GameStatus gameStatus) {
+        Controls(List<Integer> keyEvents, Function<App, GameStatus> onPressFunction) {
             this.keyEvents = keyEvents;
-            this.gameStatus = gameStatus;
+            this.onPressFunction = onPressFunction;
         }
 
         public List<Integer> getKeyEvents() {
             return keyEvents;
         }
 
-        public GameStatus getGameStatus() {
-            return gameStatus;
+        public Function<App, GameStatus> getOnPressFunction() {
+            return onPressFunction;
         }
     }
 
@@ -42,7 +49,7 @@ public class ControlsListener implements KeyListener {
         for(Controls control : Controls.values()) {
             for(int keyEvent : control.getKeyEvents())
                 if(keyEvent == e.getExtendedKeyCode())
-                    app.checkGameStatus(control.getGameStatus());
+                    app.checkGameStatus(control.getOnPressFunction().apply(this.app));
         }
     }
 

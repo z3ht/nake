@@ -20,22 +20,6 @@ public class Border implements Collidable<Snake> {
         this.height = height;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
     @Override
     public GameStatus onCollision(Snake snake) {
         return GameStatus.END_GAME;
@@ -57,6 +41,22 @@ public class Border implements Collidable<Snake> {
 
         g2d.fillRect(0, 0, this.width, this.board.getHeight());
         g2d.fillRect(this.board.getWidth() - this.getWidth(), 0, this.board.getWidth(), this.board.getHeight());
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     @Override
